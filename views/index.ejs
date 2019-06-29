@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
+  <!-- JS -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/stream.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <style>
+    #center_container { 
+      position: relative;
+      width: 100%;
+      height:100%;
+      top:50%;
+      left:50%;
+      /* margin-top:-50%; */
+      /* margin-left:-50%;  */
+    }
+
+    /* Center the loader */
+    #loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #7289DA;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+      position: relative;
+      -webkit-animation-name: animatebottom;
+      -webkit-animation-duration: 1s;
+      animation-name: animatebottom;
+      animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+      from {
+        bottom: -100px;
+        opacity: 0
+      }
+
+      to {
+        bottom: 0px;
+        opacity: 1
+      }
+    }
+
+    @keyframes animatebottom {
+      from {
+        bottom: -100px;
+        opacity: 0
+      }
+
+      to {
+        bottom: 0;
+        opacity: 1
+      }
+    }
+
+    #wrapper {
+      margin: 0 auto;
+    }
+
+    audio {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      width: calc(100% - 20px);
+    }
+
+    html, body {
+        height: 100%;
+    }
+    .main {
+        height: 100%;
+        width: 100%;
+        display: table;
+    }
+    .wrapper {
+        display: table-cell;
+        height: 100%;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .content_center {
+      position: relative;
+    }
+    .content_center div {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    #btn_group button:hover{
+      color: white;
+      background-color: #7289DA;
+    }
+
+    #btn_group button{
+      border: 1px solid #7289DA;
+      background-color: rgba(0,0,0,0);
+      color: #7289DA;
+      padding: 5px;
+      cursor:pointer;
+    }
+
+    .control {
+      height:50px;
+      width:50px;
+    }
+
+    .titlebtn {
+      height: 50px;
+      width: 700px;
+    }
+  </style>
+</head>
+
+<body onload="myFunction()" style="background: #2C2F33">
+  <div id="loader"></div>
+  <audio id="audio" src="/stream" preload="none"></audio>
+  <!-- HTML -->
+  <div id="main" class="main" style="display: none">
+    <div class="wrapper">
+    <canvas id="progress_bar" width="700" height="10"></canvas>
+      <div id="btn_group">
+        <button class="control" onclick="changePauseStatus()"><i class="fas fa-pause"></i></button>
+        <button class="titlebtn"><%= data.nowplaying.title %></button>
+        <button class="control" onclick="changePauseStatus()"><i class="fas fa-volume-up"></i></button>
+      </div>
+      <canvas id="canvas" width="700" height="120"></canvas>
+    </div>
+  </div>
+  <%# <div id="center"> %>
+    <%# <div> %>
+      <%# <canvas id="canvas" width="700" height="120"></canvas> %>
+    <%# </div> %>
+  <%# </div> %>
+  <%# <div id="center_container"> %>
+  <%# </div> %>
+</body>
+
+</html>
