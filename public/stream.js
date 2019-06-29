@@ -5,7 +5,7 @@ io.on("music_updated", async (data) => {
     console.log(data);
     audio.src = "/stream";
     await audio.load();
-    await audio.play();
+    // await audio.play(); -- REMOVE FOR PAUSED SUPPORT
     document.querySelector("#btn_group > button.titlebtn").innerText = data.nowplaying.title;
 });
 var myVar;
@@ -19,8 +19,6 @@ async function myFunction() {
     var analyser = context.createAnalyser();
     myVar = setTimeout(function () { showPage(context) }, 1000);
     var canvas = document.getElementById("canvas");
-    // canvas.width = window.innerWidth / 2;
-    // canvas.height = window.innerHeight / 2;
     var ctx = canvas.getContext("2d");
 
     src.connect(analyser);
@@ -50,10 +48,6 @@ async function myFunction() {
 
         for (var i = 0; i < bufferLength; i++) {
             barHeight = dataArray[i];
-
-            var r = barHeight + (25 * (i / bufferLength));
-            var g = 250 * (i / bufferLength);
-            var b = 50;
 
             // ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
             ctx.fillStyle = "#7289DA";
