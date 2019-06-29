@@ -1,83 +1,95 @@
+
 'use strict';
 var io = io.connect();
-
+var init = false;
 io.on("music_updated", async (data) => {
     console.log(data);
-    audio.src = "/stream";
-    await audio.load();
-    // await audio.play(); -- REMOVE FOR PAUSED SUPPORT
     document.querySelector("#btn_group > button.titlebtn").innerText = data.nowplaying.title;
 });
-var myVar;
+window.onload = function(){
+    showPage();
+}
 async function myFunction() {
-    var audio = document.getElementById("audio");
-    audio.src = "/stream";
-    await audio.load();
-    var context = new AudioContext();
-    audio.crossOrigin = "anonymous";
-    var src = context.createMediaElementSource(audio);
-    var analyser = context.createAnalyser();
-    myVar = setTimeout(function () { showPage(context) }, 1000);
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
+    
+    if (!init) {
+        var audio = document.getElementById("audio");
+        audio.src = "/stream";
+        await audio.load();
+        audio.crossOrigin = "anonymous";
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+        src.connect(analyser);
+        analyser.connect(context.destination);
+        analyser.fftSize = 8192;
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
 
-    src.connect(analyser);
-    analyser.connect(context.destination);
 
-    analyser.fftSize = 8192;
 
-    var bufferLength = analyser.frequencyBinCount;
+        var bufferLength = analyser.frequencyBinCount;
 
-    var dataArray = new Uint8Array(bufferLength);
+        var dataArray = new Uint8Array(bufferLength);
 
-    var WIDTH = canvas.width;
-    var HEIGHT = canvas.height;
+        var WIDTH = canvas.width;
+        var HEIGHT = canvas.height;
 
-    var barWidth = (WIDTH / bufferLength)+3;
-    var barHeight;
-    var x = 0;
+        var barWidth = (WIDTH / bufferLength) + 3;
+        var barHeight;
+        var x = 0;
 
-    function renderFrame() {
-        requestAnimationFrame(renderFrame);
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
 
-        x = 0;
+            x = 0;
 
-        analyser.getByteFrequencyData(dataArray);
+            analyser.getByteFrequencyData(dataArray);
 
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-        for (var i = 0; i < bufferLength; i++) {
-            barHeight = dataArray[i];
+            for (var i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i];
 
-            // ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-            ctx.fillStyle = "#7289DA";
-            ctx.fillRect(x, barHeight / HEIGHT, barWidth, barHeight / 3);
+                var r = barHeight + (25 * (i / bufferLength));
+                var g = 250 * (i / bufferLength);
+                var b = 50;
 
-            x += barWidth + 1;
+                // ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+                ctx.fillStyle = "#7289DA";
+                ctx.fillRect(x, barHeight / HEIGHT, barWidth, barHeight / 3);
+
+                x += barWidth + 1;
+            }
         }
+        renderFrame();
+        init = true;
+        changePauseStatus();
+        document.getElementById("play").onclick = changePauseStatus;
     }
-    renderFrame();
 };
 
-function showPage(context) {
+async function showPage() {
     document.getElementById("loader").style.display = "none";
     document.getElementById("main").style.display = "table";
     var audio = document.getElementById("audio");
-    const promise = audio.play();
+    const promise = undefined;
+    audio.oncanplaythrough = async function () {
+        await audio.play();
+        
+    }
     if (promise !== undefined) {
         promise.then(_ => {
             console.log("Autoplay Started");
         }).catch(error => {
-            location.reload();
+            console.log(error);
         });
     }
-    context.resume().then(() => {
-        io.emit("loaded");
-        console.log('Playback resumed successfully');
-    });
+    var context = document.getElementById("audio");
+    
 }
 
-function changePauseStatus() {
+async function changePauseStatus() {
+
     var audio = document.getElementById("audio");
     if (audio.paused) {
         document.querySelector("#btn_group > button").innerHTML = '<i class="fas fa-pause"></i>'
